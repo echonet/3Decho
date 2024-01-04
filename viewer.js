@@ -99,10 +99,12 @@ in vec3 norm;
 uniform mat4 M_proj;
 uniform mat4 M_slice;
 out vec3 color;
+#define scale 20.
+#define lighting vec3(1., 1., 1.)
 
 void main(){
-    gl_Position = M_proj * M_slice * vec4(pt_pos, 1.);
-    color = norm;
+    gl_Position = M_proj * M_slice * vec4(-pt_pos.z * scale, pt_pos.y * scale, pt_pos.x * scale, 1.);
+    color = vec3(0.5 * dot(norm, normalize(lighting)) + 0.5);
 }
 
 `;
@@ -446,7 +448,7 @@ function add_examples(){
 
 function load_probe_mesh(){
     let req = new XMLHttpRequest();
-    req.open('GET', 'test.pts');
+    req.open('GET', 'probe.pts');
     // req.open('GET', 'probe.pts');
     req.responseType = 'arraybuffer';
     req.onreadystatechange = function(){
@@ -638,7 +640,7 @@ function init(){
         mat4.multiply(M_proj, M_perspective, M_camera);
         draw_slice();
         draw_wireframe();
-        // draw_probe(); TODO: FIX
+        draw_probe();  //TODO: FIX
 
         setTimeout(() =>{requestAnimationFrame(loop);}, 1000 / fps);
     };
